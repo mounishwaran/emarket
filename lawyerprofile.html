@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lawyer Profile</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f4f7fc;
+            font-family: Arial, sans-serif;
+        }
+        .profile-container {
+            margin-top: 50px;
+            max-width: 900px;
+            margin: auto;
+            background: #fff;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        .profile-header {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        .profile-picture-container {
+            width: 120px;
+            height: 120px;
+            position: relative;
+        }
+        .profile-picture {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%; /* Ensures a perfect circle */
+            object-fit: cover;
+            border: 3px solid #007bff;
+        }
+        .btn-container {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .section-title {
+            font-weight: bold;
+            font-size: 1.2rem;
+            color: #0056b3;
+            margin-top: 30px;
+        }
+        .form-control-plaintext {
+            font-weight: bold;
+            color: #555;
+        }
+        #profilePicUpload {
+            display: none; /* Hide the input file by default */
+        }
+    </style>
+</head>
+<body>
+    <div class="container profile-container">
+        <!-- Profile Header Section -->
+        <div class="profile-header">
+            <div class="profile-picture-container">
+                <img src="carousel1.png" alt="Profile Picture" class="profile-picture" id="profilePicPreview">
+            </div>
+
+            <!-- Buttons for Edit Profile and Change Picture beside the profile picture -->
+            <div class="btn-container">
+                <button class="btn btn-primary btn-sm" onclick="toggleEdit()">Edit Profile</button>
+                <label for="profilePicUpload" class="btn btn-secondary btn-sm">Change Picture</label>
+                <input type="file" id="profilePicUpload" accept="image/*" onchange="loadProfilePicture(event)">
+            </div>
+        </div>
+
+        <!-- Display Full Name and Specialization -->
+        <h3 id="fullNameDisplay">John Doe</h3>
+        <p id="specializationDisplay">Corporate Law, Family Law</p>
+
+        <!-- Personal Information Section -->
+        <div class="section-title">Personal Information</div>
+        <form id="profileForm">
+            <div class="mb-3">
+                <label for="fullName" class="form-label">Full Name</label>
+                <input type="text" class="form-control-plaintext" id="fullName" value="John Doe" readonly>
+            </div>
+            <div class="mb-3">
+                <label for="email" class="form-label">Email</label>
+                <input type="email" class="form-control-plaintext" id="email" value="lawyer@example.com" readonly>
+            </div>
+            <div class="mb-3">
+                <label for="phone" class="form-label">Phone Number</label>
+                <input type="tel" class="form-control-plaintext" id="phone" value="+1 234 567 890" readonly>
+            </div>
+            <div class="mb-3">
+                <label for="dob" class="form-label">Date of Birth</label>
+                <input type="date" class="form-control-plaintext" id="dob" value="1980-01-01" readonly>
+            </div>
+
+            <!-- Professional Information Section -->
+            <div class="section-title">Professional Information</div>
+            <div class="mb-3">
+                <label for="lawFirm" class="form-label">Law Firm Name</label>
+                <input type="text" class="form-control-plaintext" id="lawFirm" value="Doe & Partners" readonly>
+            </div>
+            <div class="mb-3">
+                <label for="experience" class="form-label">Years of Experience</label>
+                <input type="number" class="form-control-plaintext" id="experience" value="10" readonly>
+            </div>
+            <div class="mb-3">
+                <label for="specialization" class="form-label">Area(s) of Specialization</label>
+                <input type="text" class="form-control-plaintext" id="specialization" value="Corporate Law, Family Law" readonly>
+            </div>
+
+            <!-- Office Information Section -->
+            <div class="section-title">Office Information</div>
+            <div class="mb-3">
+                <label for="address" class="form-label">Office Address</label>
+                <input type="text" class="form-control-plaintext" id="address" value="123 Main Street, New York" readonly>
+            </div>
+            <div class="mb-3">
+                <label for="availability" class="form-label">Availability</label>
+                <input type="text" class="form-control-plaintext" id="availability" value="Mon - Fri, 9AM - 5PM" readonly>
+            </div>
+
+            <!-- Profile and Portfolio Section -->
+            <div class="section-title">Profile & Portfolio</div>
+            <div class="mb-3">
+                <label for="bio" class="form-label">Bio / Introduction</label>
+                <textarea class="form-control-plaintext" id="bio" rows="3" readonly>A dedicated lawyer with over a decade of experience in corporate and family law.</textarea>
+            </div>
+            <div class="mb-3">
+                <label for="portfolio" class="form-label">Portfolio Link</label>
+                <input type="url" class="form-control-plaintext" id="portfolio" value="https://portfolio.com/lawyer" readonly>
+            </div>
+        </form>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Preview and update the selected profile picture
+        function loadProfilePicture(event) {
+            const image = document.getElementById('profilePicPreview');
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    image.src = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        // Toggle between read-only and editable states
+        function toggleEdit() {
+            document.querySelectorAll('.form-control-plaintext').forEach(input => {
+                input.readOnly = !input.readOnly;
+                input.classList.toggle('form-control');
+                input.classList.toggle('form-control-plaintext');
+            });
+            const editButton = document.querySelector('.btn-container button');
+            editButton.textContent = editButton.textContent === 'Edit Profile' ? 'Save Changes' : 'Edit Profile';
+        }
+    </script>
+</body>
+</html>

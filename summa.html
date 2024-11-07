@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enhanced Scheduling Calendar</title>
+    <style>
+        /* Calendar Styles */
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background-color: #f4f4f9;
+            margin: 0;
+        }
+        .calendar-container {
+            width: 320px;
+            background: #fff;
+            padding: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+            text-align: center;
+        }
+        .selectors {
+            margin-bottom: 10px;
+        }
+        .month-year-selector {
+            font-size: 1.2em;
+            margin: 5px;
+        }
+        .days {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 5px;
+            text-align: center;
+        }
+        .days div {
+            width: 40px;
+            height: 40px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        .days div:hover {
+            background-color: #e0e0e0;
+        }
+        .highlighted {
+            background-color: #4caf50;
+            color: white;
+        }
+        .note-box {
+            display: none;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: #fff;
+            padding: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            border-radius: 10px;
+            width: 250px;
+            text-align: left;
+            z-index: 100;
+        }
+        .note-box input, .note-box button {
+            width: 100%;
+            padding: 8px;
+            margin-top: 10px;
+        }
+        .close-btn {
+            position: absolute;
+            top: 5px;
+            right: 10px;
+            font-size: 18px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="calendar-container">
+        <div class="selectors">
+            <select id="month-selector" class="month-year-selector"></select>
+            <select id="year-selector" class="month-year-selector"></select>
+        </div>
+        <div class="days" id="days-container"></div>
+    </div>
+
+    <div class="note-box" id="note-box">
+        <span class="close-btn" onclick="closeNoteBox()">&#10006;</span>
+        <h3>Add Meeting</h3>
+        <input type="text" id="meeting-title" placeholder="Meeting Title / Agenda">
+        <button onclick="saveNote()">Save</button>
+    </div>
+
+    <script>
+        const daysContainer = document.getElementById("days-container");
+        const monthSelector = document.getElementById("month-selector");
+        const yearSelector = document.getElementById("year-selector");
+        const noteBox = document.getElementById("note-box");
+        const meetingTitleInput = document.getElementById("meeting-title");
+        let selectedDate = null;
+        const scheduledDates = {};
+
+        // Populate month and year selectors
+        const currentYear = new Date().getFullYear();
+        const currentMonth = new Date().getMonth();
+
+        for (let i = 0; i < 12; i++) {
+            const option = document.createElement("option");
+            option.value = i;
+            option.textContent = new Date(2020, i).toLocaleString("default", { month: "long" });
+            monthSelector.appendChild(option);
+        }
+
+        for (let i = currentYear - 20; i <= currentYear + 20; i++) {
+            const option = document.createElement("option");
+            option.value = i;
+            option.textContent = i;
+            yearSelector.appendChild(option);
+        }
+
+        monthSelector.value = currentMonth;
+        yearSelector.value = currentYear;
+
+        // Render Calendar
+        function renderCalendar() {
+            daysContainer.innerHTML = "";
+            const year = parseInt(yearSelector.value);
+            const month = parseInt(monthSelector.value);
+            const startDay = new Date(year, month, 1).getDay();
+            const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+            for (let i = 0; i < startDay; i++) {
+                daysContainer.innerHTML += `<div></div>`;
+            }
+
+            for (let day = 1; day <= daysInMonth; day++) {
+                const dayElement = document.createElement('div');
+                dayElement.textContent = day;
+
+                const dateKey = `${day}-${month + 1}-${year}`;
+                if (scheduledDates[dateKey]) {
+                    dayElement.classList.add('highlighted');
+                }
+
+                dayElement.onclick = () => openNoteBox(year, month + 1, day);
+                daysContainer.appendChild(dayElement);
+            }
+        }
+
+        function openNoteBox(year, month, day) {
+            selectedDate = `${day}-${month}-${year}`;
+            meetingTitleInput.value = scheduledDates[selectedDate] || "";
+            noteBox.style.display = "block";
+            noteBox.querySelector("h3").textContent = `Add Meeting on ${selectedDate}`;
+        }
+
+        function closeNoteBox() {
+            noteBox.style.display = "none";
+        }
+
+        function saveNote() {
+            const title = meetingTitleInput.value;
+            if (title) {
+                scheduledDates[selectedDate] = title;
+                renderCalendar();
+                closeNoteBox();
+            } else {
+                alert("Please enter a meeting title.");
+            }
+        }
+
+        window.onclick = function(event) {
+            if (event.target == noteBox) {
+                closeNoteBox();
+            }
+        };
+
+        monthSelector.onchange = renderCalendar;
+        yearSelector.onchange = renderCalendar;
+
+        renderCalendar();
+    </script>
+</body>
+</html>
